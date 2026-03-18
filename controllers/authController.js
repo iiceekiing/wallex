@@ -117,10 +117,25 @@ class AuthController {
         await emailService.sendOTP(email, otp, 'verification');
       } catch (emailError) {
         console.error('Failed to send OTP email:', emailError);
-        return res.status(500).json({
-          success: false,
-          message: 'Failed to send verification email'
-        });
+        // In development, return OTP in response for testing
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🔢 DEVELOPMENT OTP for ${email}: ${otp}`);
+          return res.status(201).json({
+            success: true,
+            message: 'User registered successfully. Please verify your email.',
+            data: {
+              userId: user.id,
+              email: user.email,
+              isVerified: false,
+              otp: otp // Only in development
+            }
+          });
+        } else {
+          return res.status(500).json({
+            success: false,
+            message: 'Failed to send verification email'
+          });
+        }
       }
 
       res.status(201).json({
@@ -236,6 +251,24 @@ class AuthController {
       const existingWallet = await Wallet.findByUserId(verifiedUser.id);
       if (!existingWallet) {
         await Wallet.create(verifiedUser.id);
+      }
+
+      // Send welcome email
+      try {
+        // Extract first name from email (before @) for personalization
+        const firstName = email.split('@')[0];
+        await emailService.sendWelcomeEmail(email, firstName);
+        console.log(`📧 Welcome email sent to ${email}`);
+      } catch (welcomeEmailError) {
+        console.error('Failed to send welcome email:', welcomeEmailError);
+        // In development, show welcome email content in console
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🎉 DEVELOPMENT MODE - Welcome email for ${email}:`);
+          console.log(`Subject: Welcome to Wallex - Your Secure Escrow Platform`);
+          console.log(`Content: Beautiful welcome email template with features and security tips`);
+          console.log(`📧 This would be sent to ${email} if email service was configured`);
+        }
+        // Don't fail the verification if welcome email fails
       }
 
       res.status(200).json({

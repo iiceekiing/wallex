@@ -73,13 +73,7 @@ const LoginPage = () => {
         }
       } else {
         // Regular user login
-        const isPhone = formData.email.includes('+') || formData.email.length > 15;
-        const identifier = isPhone ? 'phone' : 'email';
-        
-        const response = await authAPI.login(
-          isPhone ? 'phone-user@example.com' : formData.email,
-          formData.password
-        );
+        const response = await authAPI.login(formData.email, formData.password);
         
         // Store JWT token
         localStorage.setItem('token', response.data.data.token);

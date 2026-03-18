@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { enhancedApi } from './mockApi';
 
 const API_BASE_URL = 'http://localhost:3000/api';
 
@@ -40,49 +39,32 @@ api.interceptors.response.use(
 
 // Auth API
 export const authAPI = {
-  register: (userData) => enhancedApi.auth.register(userData),
-  verifyOTP: (email, otp) => enhancedApi.auth.verifyOTP(email, otp),
-  login: (email, password) => enhancedApi.auth.login(email, password),
-  forgotPassword: (email) => enhancedApi.auth.forgotPassword(email),
-  resetPassword: (email, otp, newPassword) => enhancedApi.auth.resetPassword(email, otp, newPassword),
+  register: (userData) => api.post('/auth/register', userData),
+  verifyOTP: (email, otp) => api.post('/auth/verify-otp', { email, otp }),
+  login: (email, password) => api.post('/auth/login', { email, password }),
+  forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+  resetPassword: (email, otp, newPassword) => api.post('/auth/reset-password', { email, otp, newPassword }),
 };
 
 // User API
 export const userAPI = {
-  getProfile: () => enhancedApi.user.getProfile(),
-  updateUserRiskScore: (userId, action) => enhancedApi.user.updateUserRiskScore(userId, action),
-  checkAccountRestrictions: (userId) => enhancedApi.user.checkAccountRestrictions(userId),
-  getAuditLogs: () => enhancedApi.user.getAuditLogs(),
-  // TrustChain V3 APIs
-  getVerificationLevel: () => enhancedApi.user.getVerificationLevel(),
-  verifyPhone: (phoneNumber) => enhancedApi.user.verifyPhone(phoneNumber),
-  verifyEmail: () => enhancedApi.user.verifyEmail(),
-  verifyFacial: () => enhancedApi.user.verifyFacial(),
-  verifyGovernmentID: (idType, idNumber) => enhancedApi.user.verifyGovernmentID(idType, idNumber),
-  getTrustScore: () => enhancedApi.user.getTrustScore(),
-  getTrustProfile: () => enhancedApi.user.getTrustProfile(),
-  reportSuspiciousActivity: (reportedUserId, reason, description) => enhancedApi.user.reportSuspiciousActivity(reportedUserId, reason, description),
+  getProfile: () => api.get('/user/me'),
+  updateUserRiskScore: (userId, action) => api.put('/user/risk-score', { userId, action }),
+  checkAccountRestrictions: (userId) => api.get('/user/restrictions'),
+  getAuditLogs: () => api.get('/user/audit-logs'),
 };
 
 // Wallet API
 export const walletAPI = {
-  getWallet: () => enhancedApi.wallet.getWallet(),
-  fundWallet: (amount) => enhancedApi.wallet.fundWallet(amount),
-  withdrawWallet: (amount) => enhancedApi.wallet.withdrawWallet(amount),
-  createEscrow: (amount, recipientEmail, description) => enhancedApi.wallet.createEscrow(amount, recipientEmail, description),
-  releaseEscrow: (escrowId) => enhancedApi.wallet.releaseEscrow(escrowId),
-  getTransactions: () => enhancedApi.wallet.getTransactions(),
-};
-
-// Notifications API
-export const notificationsAPI = {
-  getNotifications: () => enhancedApi.notifications.getNotifications(),
-  markNotificationRead: (notificationId) => enhancedApi.notifications.markNotificationRead(notificationId),
+  getWallet: () => api.get('/wallet'),
+  fundWallet: (amount) => api.post('/wallet/fund', { amount }),
+  withdrawWallet: (amount) => api.post('/wallet/withdraw', { amount }),
+  getTransactions: () => api.get('/wallet/transactions'),
 };
 
 // Health check
 export const healthAPI = {
-  check: () => enhancedApi.health.check(),
+  check: () => api.get('/health'),
 };
 
 export default api;

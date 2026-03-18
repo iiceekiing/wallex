@@ -14,4 +14,25 @@ router.use(authenticateToken);
  */
 router.get('/', UserController.getWallet);
 
+/**
+ * @route   POST /api/wallet/fund
+ * @desc    Add funds to wallet
+ * @access  Private
+ */
+router.post('/fund', UserController.fundWallet);
+
+/**
+ * @route   POST /api/wallet/withdraw
+ * @desc    Withdraw funds from wallet
+ * @access  Private
+ */
+router.post('/withdraw', UserController.withdrawWallet);
+
+/**
+ * @route   GET /api/wallet/transactions
+ * @desc    Get wallet transaction history
+ * @access  Private
+ */
+router.get('/transactions', UserController.getTransactions);
+
 module.exports = router;
